@@ -1,29 +1,69 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-
-Vue.use(VueRouter)
+import Vue from "vue";
+import VueRouter from "vue-router";
+const Home = () => import("views/home/Home.vue");
+const About = () => import("views/about/About.vue");
+const Action = () => import("views/action/Action.vue");
+const Service = () => import("views/service/Service.vue");
+const HomeUser = () => import("views/home/childrenComp/HomeUser.vue");
+const HomeData = () => import("views/home/childrenComp/HomeData.vue");
+const UserBlog = () => import("views/home/childrenComp/UserBlog.vue");
+const UserFriend = () => import("views/home/childrenComp/UserFriend.vue");
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: Home
+    path: "",
+    redirect: "/home",
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
-]
+    path: "/home",
+    component: Home,
+    children: [
+      {
+        path: "user",
+
+        component: HomeUser,
+        children: [
+          {
+            path: "blog",
+
+            component: UserBlog,
+          },
+          {
+            path: "friend",
+
+            component: UserFriend,
+          },
+        ],
+      },
+      {
+        path: "data",
+
+        component: HomeData,
+      },
+    ],
+  },
+  {
+    path: "/about",
+    component: About,
+  },
+  {
+    path: "/action",
+    component: Action,
+  },
+  {
+    path: "/service",
+    component: Service,
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
-
-export default router
+  routes,
+});
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch((err) => err);
+};
+export default router;
